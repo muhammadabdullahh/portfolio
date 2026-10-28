@@ -821,6 +821,9 @@ a {
 .book-photo {
   float: right;
   width: 38%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
   margin: 0 0 10px 16px;
   border: 3px solid #5b3d1f;
   image-rendering: auto;
@@ -1077,6 +1080,10 @@ a {
 }
 .diploma-photo {
   width: 100%;
+  height: auto;
+  aspect-ratio: 450 / 640;
+  object-fit: cover;
+  align-self: start;
   border: 3px solid #000;
   display: block;
 }
