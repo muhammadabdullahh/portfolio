@@ -7,7 +7,6 @@ import { Toasts } from './ui/Toasts';
 import { Chat } from './ui/Chat';
 import { Classic } from './ui/Classic';
 import { AboutPanel, ContactPanel, EducationPanel, HomePanel, InventoryPanel, JobPanel, PausePanel, ProjectPanel, ReposPanel, ResumePanel } from './ui/Panels';
-import { sfx } from './audio';
 
 function CurrentPanel() {
   const panel = useStore((s) => s.panel);
@@ -53,7 +52,6 @@ export default function App() {
   }, [screen]);
 
   const play = () => {
-    sfx.levelUp();
     set({ screen: 'play' });
     const st = useStore.getState();
     st.unlock('hello');

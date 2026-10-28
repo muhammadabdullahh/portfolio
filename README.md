@@ -13,13 +13,15 @@ Recruiters in a hurry can hit **Quick view** (or go to `/#quick`) for a plain, p
 - **GitHub chest**: lists my repos live from the GitHub API.
 - **Advancements**: 14 achievements, plus bugs to squash. Progress is saved in the browser.
 - **Chat console** (T or /): `/help`, `/tp quarry`, `/time set night`, `/hire`, and so on. Plain messages go to the guestbook.
-- Day and night follow the visitor's local time. Sounds are synthesized. Responsive from phones to desktops, with touch controls, keyboard support and reduced-motion support.
+- Day and night follow the visitor's local time. Sounds are synthesized in the browser (including surface-aware footsteps). Responsive from phones to desktops, with touch controls, keyboard support and reduced-motion support.
 
-All textures, sprites and the logo are drawn in code. This is a fan-made tribute: no Mojang assets are used, and it isn't affiliated with Mojang or Minecraft.
+All textures, sprites, sounds and the logo are original: drawn or synthesized in code. No Minecraft game files (textures, sounds, music, fonts or logos) are used or redistributed, per the [Minecraft Usage Guidelines](https://www.minecraft.net/en-us/usage-guidelines). The UI font is [Monocraft](https://github.com/IdreesInc/Monocraft), an independent open-source font (SIL OFL 1.1).
+
+**NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.** Built and run by Muhammad Abdullah (info.abdullahmuhammad@gmail.com).
 
 ## Stack
 
-Vite · React 19 · TypeScript · Canvas 2D (custom engine) · skinview3d (three.js) · Zustand · Vitest · Playwright. Hosted free on GitHub Pages via GitHub Actions.
+Vite · React 19 · TypeScript · Canvas 2D (custom engine) · skinview3d (three.js) · Zustand · Vitest. Hosted free on GitHub Pages via GitHub Actions.
 
 ## Develop
 

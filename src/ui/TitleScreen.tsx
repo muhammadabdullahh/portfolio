@@ -58,7 +58,9 @@ export function TitleScreen({ onPlay }: { onPlay: () => void }) {
 
       <footer className="title-foot">
         <span>Muhammad Abdullah · Software Developer · {profile.location}</span>
-        <span>Fan-made tribute. Not an official Minecraft product; not affiliated with Mojang.</span>
+        <span>
+          A Minecraft-inspired portfolio by Muhammad Abdullah ({profile.email}). NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
+        </span>
       </footer>
     </main>
   );

@@ -11,8 +11,6 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "@fontsource/pixelify-sans": "^5.3.0",
-    "@fontsource/vt323": "^5.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "skinview3d": "^3.4.2",

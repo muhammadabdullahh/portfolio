@@ -12,6 +12,8 @@ export type EngineEvents = {
   onBug?: () => void;
   onHover?: (h: { label: string; x: number; y: number } | null) => void;
   onMove?: () => void;
+  onStep?: (surface: 'grass' | 'stone' | 'wood' | 'sand') => void;
+  onMineHit?: () => void;
 };
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; max: number; color: string; size: number };
@@ -323,7 +325,13 @@ export class Engine {
     }
     if (this.py > H + 4) this.teleport(this.section.spawnX);
 
+    const prevPhase = this.walkPhase;
     this.walkPhase = this.vx ? this.walkPhase + dt * Math.abs(this.vx) * 1.9 : this.walkPhase * 0.8;
+    if (this.vx && this.grounded && Math.floor(this.walkPhase / Math.PI) !== Math.floor(prevPhase / Math.PI)) {
+      const under = this.fg(Math.floor(this.px), Math.floor(this.py + 0.05));
+      const surface = under === B.PLANKS || under === B.DARK_PLANKS ? 'wood' : under === B.SAND ? 'sand' : under === B.GRASS || under === B.DIRT ? 'grass' : 'stone';
+      this.ev.onStep?.(surface);
+    }
 
     // mining
     if (this.mining) {
@@ -331,6 +339,7 @@ export class Engine {
       if (Math.floor(this.mining.t * 12) !== Math.floor((this.mining.t - dt) * 12)) {
         this.burst(this.mining.x + 0.5, this.mining.y + 0.5, '#8a8a8a', 2, 0.6);
       }
+      if (Math.floor(this.mining.t * 7) !== Math.floor((this.mining.t - dt) * 7)) this.ev.onMineHit?.();
       if (this.mining.t > 0.45) {
         const m = this.mining;
         const b = this.fg(m.x, m.y);
@@ -638,7 +647,7 @@ export class Engine {
       ctx.fillRect(bx, s.y - bh * 0.2 + bh - 2, bw, 2);
       ctx.fillStyle = '#1c1206';
       const fs = Math.max(10, Math.round(bs * 0.24));
-      ctx.font = `${fs}px "Pixelify Sans", monospace`;
+      ctx.font = `${fs}px "Monocraft", monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       (text ?? []).forEach((t, i) => ctx.fillText(t, s.x + bs / 2, s.y - bh * 0.2 + bh * 0.08 + i * fs * 1.1));
@@ -731,7 +740,7 @@ export class Engine {
   nameTag(text: string, x: number, y: number, scale = 1, sub?: string, color?: string) {
     const { ctx, block: bs } = this;
     const fs = Math.max(11, Math.round(bs * 0.34 * scale));
-    ctx.font = `${fs}px "Pixelify Sans", monospace`;
+    ctx.font = `${fs}px "Monocraft", monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const w = ctx.measureText(text).width + fs * 0.8;
@@ -740,18 +749,18 @@ export class Engine {
     let sfs = 0;
     if (sub) {
       sfs = Math.max(10, Math.round(fs * 0.72));
-      ctx.font = `${sfs}px "Pixelify Sans", monospace`;
+      ctx.font = `${sfs}px "Monocraft", monospace`;
       sw = ctx.measureText(sub).width + fs * 0.8;
       h += sfs * 1.2;
     }
     const bw = Math.max(w, sw);
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(Math.round(x - bw / 2), Math.round(y - fs * 0.7), Math.round(bw), Math.round(h));
-    ctx.font = `${fs}px "Pixelify Sans", monospace`;
+    ctx.font = `${fs}px "Monocraft", monospace`;
     ctx.fillStyle = color ?? '#ffffff';
     ctx.fillText(text, x, y);
     if (sub) {
-      ctx.font = `${sfs}px "Pixelify Sans", monospace`;
+      ctx.font = `${sfs}px "Monocraft", monospace`;
       ctx.fillStyle = '#e0e0e0';
       ctx.fillText(sub, x, y + fs * 0.65 + sfs * 0.55);
     }

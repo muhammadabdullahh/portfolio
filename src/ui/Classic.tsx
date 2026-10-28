@@ -124,7 +124,9 @@ export function Classic() {
           </p>
         </section>
       </main>
-      <footer className="cl-foot">Fan-made tribute to a favourite childhood game. Not an official Minecraft product; not affiliated with Mojang.</footer>
+      <footer className="cl-foot">
+        A Minecraft-inspired portfolio built and run by Muhammad Abdullah ({profile.email}). NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
+      </footer>
     </div>
   );
 }

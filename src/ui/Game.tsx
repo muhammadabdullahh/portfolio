@@ -52,14 +52,14 @@ export function Game() {
         onMine: (id) => {
           const store = useStore.getState();
           sfx.breakBlock();
-          setTimeout(sfx.pop, 120);
+          setTimeout(sfx.xp, 140);
+          setTimeout(sfx.xp, 230);
           if (store.mine(id)) {
             const sk = skills.find((s) => s.id === id);
             store.toast('Skill collected', sk ? `${sk.name} (${sk.cat})` : id);
             store.unlock('firstore');
             if (useStore.getState().mined.length >= skills.length) {
               store.unlock('fullstack');
-              sfx.levelUp();
             }
           }
         },
@@ -71,6 +71,8 @@ export function Game() {
           if (store.bugs + 1 === 1) store.toast('Bug fixed', 'Only 49+ more to match my Dayforce record');
         },
         onHover: (h) => setHover(h),
+        onStep: (s) => sfx.step(s),
+        onMineHit: () => sfx.hit(),
         onMove: () => {
           if (moved) return;
           moved = true;
@@ -206,8 +208,6 @@ export function Game() {
             return;
           }
           const p = pos(e);
-          const h = engine?.hitTest(p.x, p.y);
-          if (h?.kind === 'ore') sfx.hit();
           engine?.click(p.x, p.y);
         }}
         onPointerMove={(e) => {

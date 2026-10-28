@@ -280,7 +280,7 @@ export function EducationPanel() {
   const unlock = useStore((s) => s.unlock);
   useEffect(() => {
     unlock('scholar');
-    sfx.levelUp();
+    [0, 90, 180].forEach((d) => setTimeout(sfx.xp, d));
   }, [unlock]);
   return (
     <Gui title="Enchanting table" subtitle="Education">
