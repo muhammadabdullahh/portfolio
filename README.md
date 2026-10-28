@@ -1,5 +1,7 @@
 # Muhammad Abdullah · Portfolio
 
+**Live: [mabdullah.ca](https://mabdullah.ca)**
+
 A walkable block-world portfolio. Visitors explore my career as a little 2D world: read the About book at spawn, walk through the Career Village, mine my skills as ores in the Skill Quarry, open live projects in an in-game browser, use the enchanting table for education, and step through the Multiplayer gate to get in touch.
 
 Recruiters in a hurry can hit **Quick view** (or go to `/#quick`) for a plain, printable resume page.
