@@ -109,7 +109,14 @@ export function Hud() {
   });
 
   return (
-    <div className="hud" style={{ ['--slot-size' as string]: 'min(56px, calc((100vw - 28px) / 9))', ['--hotbar-h' as string]: 'min(60px, calc((100vw - 20px) / 9))' }}>
+    <div
+      className="hud"
+      onClick={(e) => {
+        // a mouse/touch click (detail > 0) shouldn't leave the button focused; keyboard clicks keep focus
+        const b = (e.target as HTMLElement).closest('button');
+        if (b && e.detail > 0) b.blur();
+      }}
+      style={{ ['--slot-size' as string]: 'min(56px, calc((100vw - 28px) / 9))', ['--hotbar-h' as string]: 'min(60px, calc((100vw - 20px) / 9))' }}>
       <div className="hud-top">
         <div className="coords" aria-live="off">
           <div className="xyz">

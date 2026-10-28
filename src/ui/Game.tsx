@@ -121,9 +121,15 @@ export function Game() {
     const down = (ev: KeyboardEvent) => {
       const st = useStore.getState();
       if (typing()) return;
-      // let focused buttons and links handle Enter/Space themselves
       const tgt = document.activeElement;
-      if ((ev.code === 'Enter' || ev.code === 'Space') && (tgt instanceof HTMLButtonElement || tgt instanceof HTMLAnchorElement)) return;
+      const onControl = tgt instanceof HTMLButtonElement || tgt instanceof HTMLAnchorElement;
+      // In the world, Space always means jump: never re-press a button that kept focus after a click
+      if (ev.code === 'Space' && onControl && !st.panel && !st.chatOpen) {
+        ev.preventDefault();
+        tgt.blur();
+      }
+      // Enter still activates a focused button or link (keyboard users rely on it)
+      else if ((ev.code === 'Enter' || ev.code === 'Space') && onControl) return;
       if (ev.key === 'Escape') {
         if (st.chatOpen) st.set({ chatOpen: false });
         else if (st.panel) st.close();
@@ -200,6 +206,7 @@ export function Game() {
     <div className="game" aria-hidden={screen !== 'play'} style={screen === 'classic' ? { display: 'none' } : undefined}>
       <canvas
         ref={canvasRef}
+        tabIndex={-1}
         className={hover ? 'pointer' : ''}
         aria-label="Game world. Use the hotbar buttons, or A and D to walk and Enter to interact."
         onPointerDown={(e) => {
@@ -207,6 +214,8 @@ export function Game() {
             if (chatOpen) useStore.getState().set({ chatOpen: false });
             return;
           }
+          // take focus off any HUD button so keys go to the game, not the last clicked button
+          canvasRef.current?.focus({ preventScroll: true });
           const p = pos(e);
           engine?.click(p.x, p.y);
         }}

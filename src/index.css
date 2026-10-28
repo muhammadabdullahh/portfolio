@@ -94,6 +94,9 @@ a {
   image-rendering: pixelated;
   cursor: crosshair;
 }
+.game canvas:focus {
+  outline: none;
+}
 .game canvas.pointer {
   cursor: pointer;
 }
