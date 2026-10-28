@@ -16,7 +16,7 @@ export function TitleScreen({ onPlay }: { onPlay: () => void }) {
       <div className="logo-wrap">
         <h1 className="sr-only">Muhammad Abdullah, Full-Stack Software Developer</h1>
         <Logo />
-        <span className="edition">Full-Stack Edition</span>
+        <span className="edition">Software Developer Edition</span>
         <button
           className="splash"
           tabIndex={-1}

@@ -50,12 +50,21 @@ body,
   -webkit-font-smoothing: none;
   -webkit-tap-highlight-color: transparent;
 }
+html,
 body {
   overflow: hidden;
   overscroll-behavior: none;
+  max-width: 100%;
 }
+body:not(.classic) {
+  position: fixed;
+  inset: 0;
+  touch-action: manipulation;
+}
+html:has(body.classic),
 body.classic {
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 button {
   font: inherit;
@@ -322,7 +331,11 @@ a {
   position: fixed;
   inset: 0;
   z-index: 20;
+  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   display: grid;
   grid-template-rows: auto 1fr auto;
   justify-items: center;
@@ -347,7 +360,9 @@ a {
   margin: -1.2% auto 0;
   width: fit-content;
   padding: 4px 14px 6px;
-  font-size: clamp(14px, 2.4vw, 22px);
+  font-size: min(clamp(14px, 2.4vw, 22px), calc((100vw - 64px) / 20));
+  white-space: nowrap;
+  max-width: 100%;
   color: #fff;
   background: linear-gradient(#6a4a2a, #4a321a);
   border: 2px solid #2a1b0c;
@@ -998,6 +1013,7 @@ a {
   flex: 1;
   min-width: 0;
   font: inherit;
+  font-size: max(16px, 1em);
   color: #fff;
   background: rgba(0, 0, 0, 0.65);
   border: 2px solid #777;
@@ -1173,7 +1189,7 @@ a {
   }
   .splash {
     left: auto;
-    right: -4%;
+    right: 0;
     top: 62%;
     transform-origin: right center;
   }
@@ -1672,15 +1688,43 @@ a {
   .splash {
     left: auto;
     right: 0;
-    top: 74%;
+    top: calc(100% + 2px);
     transform-origin: right center;
     max-width: 70vw;
     white-space: normal;
     text-align: right;
   }
 }
+@media (max-width: 760px) {
+  /* phones: the splash gets its own row under the edition label instead of covering the character */
+  .logo-wrap {
+    padding-bottom: 60px;
+  }
+  .splash {
+    top: auto;
+    bottom: 26px;
+    right: 4px;
+    max-width: calc(100% - 8px);
+    white-space: nowrap;
+    font-size: 14px;
+    transform: rotate(-8deg);
+    animation-name: splash-sm;
+  }
+  @keyframes splash-sm {
+    to {
+      transform: rotate(-8deg) scale(1.08);
+    }
+  }
+}
 @media (max-width: 360px) {
   .hotbar {
     padding: 1px;
   }
+}
+
+/* iOS Safari zooms the page when a field under 16px gets focus */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
 }

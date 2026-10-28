@@ -174,7 +174,7 @@ export function Chat() {
           value={text}
           maxLength={160}
           autoComplete="off"
-          placeholder={guestbookEnabled ? `Chatting as ${name} · /help` : 'Type a command, e.g. /help'}
+          placeholder={guestbookEnabled ? `Chatting as ${name} · /help` : 'Type /help'}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

@@ -86,7 +86,7 @@ export class Engine {
     for (const z of this.world.bugZones)
       for (let k = 0; k < 2; k++)
         this.bugs.push({ x: z.from + hash2(k, z.from, 3) * (z.to - z.from), y: 0, dir: k % 2 ? 1 : -1, zone: z, dead: 0, speed: 0.6 + hash2(k, 4, z.to) * 0.6 });
-    this.py = this.groundY(this.px);
+    this.py = this.standY(this.px);
     this.resize();
     this.camX = this.px - this.viewW() / 2;
     this.camY = this.targetCamY();
@@ -103,6 +103,12 @@ export class Engine {
   groundY(x: number) {
     for (let y = 0; y < H; y++) if (isSolid(this.fg(Math.floor(x), y))) return y;
     return H;
+  }
+  /** Feet height where the whole hitbox stands free: the highest ground under any column the player overlaps. */
+  standY(x: number) {
+    let y = Math.min(this.groundY(x - PW / 2 + 0.001), this.groundY(x + PW / 2 - 0.001));
+    while (y > 0 && this.collides(x, y)) y -= 1;
+    return y;
   }
   removeOre(skillId: string) {
     const o = this.world.ores.find((o) => o.skillId === skillId);
@@ -172,7 +178,7 @@ export class Engine {
   teleport(x: number) {
     this.burst(this.px, this.py - 0.9, '#c77dff', 24);
     this.px = x;
-    this.py = this.groundY(x);
+    this.py = this.standY(x);
     this.vx = this.vy = 0;
     this.targetX = null;
     this.pending = null;
@@ -295,6 +301,19 @@ export class Engine {
 
     // horizontal
     const nx = this.px + this.vx * dt;
+    // never stay wedged inside terrain (e.g. after a teleport or a resize): pop up onto the nearest free spot
+    if (this.collides(this.px, this.py)) {
+      // step up a block at a time (never jump onto a roof far above)
+      for (let k = 0; k <= 3; k++) {
+        const y = Math.floor(this.py) - k;
+        if (!this.collides(this.px, y)) {
+          this.py = y;
+          this.vy = 0;
+          this.grounded = true;
+          break;
+        }
+      }
+    }
     if (!this.collides(nx, this.py)) this.px = nx;
     else {
       // auto step-up by one block

@@ -171,3 +171,6 @@ export function panelFor(a: Action): Panel {
       return null;
   }
 }
+
+// dev-only hook for the layout/overflow test scripts
+if (import.meta.env.DEV) (window as unknown as { __store: typeof useStore }).__store = useStore;
