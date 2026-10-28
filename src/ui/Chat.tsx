@@ -14,7 +14,7 @@ const PLACES = ['spawn', 'village', 'quarry', 'projects', 'library', 'contact'];
 export function Chat() {
   const open = useStore((s) => s.chatOpen);
   const set = useStore((s) => s.set);
-  const [lines, setLines] = useState<Line[]>(() => [sys('Welcome! Type /help for commands, or say hi to sign the guestbook.')]);
+  const [lines, setLines] = useState<Line[]>(() => [sys(guestbookEnabled ? 'Welcome! Type /help for commands, or say hi to sign the guestbook.' : 'Welcome! Type /help to see what you can do, e.g. /tp quarry or /hire.')]);
   const [text, setText] = useState('');
   const [name, setName] = useState(() => {
     try {
@@ -40,7 +40,6 @@ export function Chat() {
         listEntries()
           .then((es) => push(...es.map((e) => ({ id: ++lid, kind: 'msg' as const, who: e.name, text: e.message }))))
           .catch(() => push(sys('Couldn’t load the guestbook right now.')));
-      else push(sys(<>The guestbook is offline. Say hi by email instead: /email</>));
     }
   }, [open]);
 
@@ -62,7 +61,7 @@ export function Chat() {
         } catch (e) {
           push(sys((e as Error).message));
         }
-      } else push(sys('(Only you can see this. The guestbook is offline.)'));
+      } else push(sys(<>Only you can see this. To reach me, use /email or <a href={`mailto:${profile.email}`}>email me</a>.</>));
       return;
     }
     push({ id: ++lid, kind: 'cmd', text: t });
@@ -175,7 +174,7 @@ export function Chat() {
           value={text}
           maxLength={160}
           autoComplete="off"
-          placeholder={`Chatting as ${name} · /help`}
+          placeholder={guestbookEnabled ? `Chatting as ${name} · /help` : 'Type a command, e.g. /help'}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

@@ -64,6 +64,7 @@ export class Engine {
   hoverWorld: { x: number; y: number } | null = null;
   reduced = false;
   paused = false;
+  hidden = false;
   private raf = 0;
   private last = 0;
   private lightCanvas = document.createElement('canvas');
@@ -143,8 +144,8 @@ export class Engine {
     const loop = (t: number) => {
       const dt = Math.min(0.05, (t - (this.last || t)) / 1000);
       this.last = t;
-      if (!this.paused) this.update(dt);
-      this.render();
+      if (!this.paused && !this.hidden) this.update(dt);
+      if (!this.hidden) this.render();
       this.raf = requestAnimationFrame(loop);
     };
     this.raf = requestAnimationFrame(loop);
@@ -628,15 +629,15 @@ export class Engine {
       // post + board, with pixel text
       ctx.fillStyle = '#6b4f2a';
       ctx.fillRect(s.x + bs * 0.42, s.y + bs, bs * 0.16, bs);
-      const bw = bs * 2.6;
-      const bh = bs * 1.25;
+      const bw = bs * 3;
+      const bh = bs * 1.4;
       const bx = s.x + bs / 2 - bw / 2;
-      ctx.fillStyle = '#a07d4a';
+      ctx.fillStyle = '#c9a26a';
       ctx.fillRect(bx, s.y - bh * 0.2, bw, bh);
       ctx.fillStyle = '#6b4f2a';
       ctx.fillRect(bx, s.y - bh * 0.2 + bh - 2, bw, 2);
-      ctx.fillStyle = '#2b1d0e';
-      const fs = Math.max(8, Math.round(bs * 0.22));
+      ctx.fillStyle = '#1c1206';
+      const fs = Math.max(10, Math.round(bs * 0.24));
       ctx.font = `${fs}px "Pixelify Sans", monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
@@ -723,11 +724,11 @@ export class Engine {
     ctx.restore();
     ctx.restore();
 
-    // name tag
-    this.nameTag('Muhammad', s.x, s.y - (PH + 0.45) * bs, 0.8);
+    // name tag (hidden next to signs/buildings so it never covers their labels)
+    if (!this.near) this.nameTag('Muhammad', s.x, s.y - (PH + 0.45) * bs, 0.8);
   }
 
-  nameTag(text: string, x: number, y: number, scale = 1, sub?: string) {
+  nameTag(text: string, x: number, y: number, scale = 1, sub?: string, color?: string) {
     const { ctx, block: bs } = this;
     const fs = Math.max(11, Math.round(bs * 0.34 * scale));
     ctx.font = `${fs}px "Pixelify Sans", monospace`;
@@ -747,7 +748,7 @@ export class Engine {
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(Math.round(x - bw / 2), Math.round(y - fs * 0.7), Math.round(bw), Math.round(h));
     ctx.font = `${fs}px "Pixelify Sans", monospace`;
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = color ?? '#ffffff';
     ctx.fillText(text, x, y);
     if (sub) {
       ctx.font = `${sfs}px "Pixelify Sans", monospace`;
@@ -757,24 +758,14 @@ export class Engine {
   }
 
   drawLabels() {
-    const bs = this.block;
+    const near = this.mode === 'play' ? this.near : null;
+    const pulse = 0.5 + 0.5 * Math.sin(this.time * 5);
     for (const l of this.world.labels) {
       const s = this.worldToScreen(l.x, l.y);
       if (s.x < -300 || s.x > this.cssW + 300 || s.y > this.cssH + 50) continue;
+      const active = !!near && l.x >= near.x - 0.5 && l.x <= near.x + near.w + 0.5;
       // keep tall-building labels on screen
-      this.nameTag(l.text, s.x, Math.max(s.y, l.sub ? 84 : 76), l.sub ? 1 : 0.85, l.sub);
-    }
-    if (this.mode === 'play' && this.near) {
-      const i = this.near;
-      const s = this.worldToScreen(i.x + i.w / 2, i.y);
-      const bob = Math.sin(this.time * 4) * 3;
-      const t = bs * 0.25;
-      this.ctx.fillStyle = '#ffffff';
-      this.ctx.beginPath();
-      this.ctx.moveTo(s.x - t, s.y - t * 2 + bob - bs * 0.2);
-      this.ctx.lineTo(s.x + t, s.y - t * 2 + bob - bs * 0.2);
-      this.ctx.lineTo(s.x, s.y + bob - bs * 0.2);
-      this.ctx.fill();
+      this.nameTag(l.text, s.x, Math.max(s.y, l.sub ? 84 : 76), l.sub ? 1 : 0.85, l.sub, active ? `rgb(255,${230 + pulse * 25},${60 + pulse * 60})` : undefined);
     }
   }
 

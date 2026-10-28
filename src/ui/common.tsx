@@ -71,7 +71,7 @@ export function Overlay({ children, labelledBy }: { children: ReactNode; labelle
     const prev = document.activeElement as HTMLElement | null;
     const el = ref.current;
     const first = el?.querySelector<HTMLElement>('button, a, input, [tabindex]');
-    first?.focus({ preventScroll: true });
+    const raf = requestAnimationFrame(() => first?.focus({ preventScroll: true }));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Tab' && el) {
         const f = [...el.querySelectorAll<HTMLElement>('button, a[href], input, iframe, [tabindex]:not([tabindex="-1"])')].filter((n) => !n.hasAttribute('disabled'));
@@ -89,6 +89,7 @@ export function Overlay({ children, labelledBy }: { children: ReactNode; labelle
     };
     document.addEventListener('keydown', onKey);
     return () => {
+      cancelAnimationFrame(raf);
       document.removeEventListener('keydown', onKey);
       prev?.focus?.({ preventScroll: true });
     };

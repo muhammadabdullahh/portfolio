@@ -6,6 +6,7 @@ import { PlayerModel } from './PlayerModel';
 import { oreColor } from '../game/blocks';
 import { sfx } from '../audio';
 import { travel } from './Game';
+import { guestbookEnabled } from '../lib/guestbook';
 
 const asset = (p: string) => import.meta.env.BASE_URL + p;
 
@@ -292,19 +293,19 @@ export function EducationPanel() {
           </p>
           <div className="enchant-opt">
             <span>
-              <span className="galactic">ᒷ⍑ᔑリᓵ⍑ ᓭ↸ᔑ</span>With Distinction
+              <span className="galactic" aria-hidden="true">ᒷ⍑ᔑリᓵ⍑ ᓭ↸ᔑ</span>With Distinction
             </span>
             <span className="lvl">III</span>
           </div>
           <div className="enchant-opt">
             <span>
-              <span className="galactic">ℸ ̣⍑ᒷ ⋮ᔑ!¡∴</span>GPA {education.gpa}
+              <span className="galactic" aria-hidden="true">ℸ ̣⍑ᒷ ⋮ᔑ!¡∴</span>GPA {education.gpa}
             </span>
             <span className="lvl">II</span>
           </div>
           <div className="enchant-opt">
             <span>
-              <span className="galactic">ᓵ∷ᔑ⎓ℸ ̣ ⍊</span>Computer Science (Honours)
+              <span className="galactic" aria-hidden="true">ᓵ∷ᔑ⎓ℸ ̣ ⍊</span>Computer Science (Honours)
             </span>
             <span className="lvl">I</span>
           </div>
@@ -367,14 +368,16 @@ export function ContactPanel() {
         >
           {copied ? 'Copied!' : 'Copy email'}
         </Btn>
-        <Btn
-          onClick={() => {
-            close();
-            set({ chatOpen: true });
-          }}
-        >
-          Sign the guestbook
-        </Btn>
+        {guestbookEnabled && (
+          <Btn
+            onClick={() => {
+              close();
+              set({ chatOpen: true });
+            }}
+          >
+            Sign the guestbook
+          </Btn>
+        )}
         <Btn href={asset(profile.resume)} download="Muhammad_Abdullah_Resume.pdf" onClick={() => useStore.getState().unlock('resume')}>
           Download resume
         </Btn>
@@ -389,7 +392,7 @@ export function ResumePanel() {
   const set = useStore((s) => s.set);
   useEffect(() => unlock('resume'), [unlock]);
   return (
-    <Gui title="Chest" subtitle="Resume and links">
+    <Gui title="Resume chest" subtitle="Grab a copy of my resume">
       <div className="dark-inset">
         <p style={{ margin: 0 }}>{profile.summary}</p>
       </div>
@@ -455,7 +458,7 @@ export function InventoryPanel() {
     return [col, shade(col)];
   };
   return (
-    <Gui title="Inventory" subtitle={`Skills · ${mined.length} of ${skills.length} mined in the quarry`}>
+    <Gui title="Inventory" subtitle={`My ${skills.length} skills. Hover or tap one for details · ${mined.length} mined in the quarry`}>
       <div className="inv-layout">
         <div className="model-col inset" style={{ display: 'grid', placeItems: 'center', background: '#000' }}>
           <PlayerModel outfit={outfit} anim="idle" />
@@ -476,7 +479,7 @@ export function InventoryPanel() {
                   role="option"
                   aria-selected={sel === s.id}
                   aria-label={`${s.name}, ${s.cat}${mined.includes(s.id) ? ', mined' : ''}`}
-                  className={'inv-slot' + (s.core ? ' glint' : '') + (sel === s.id ? ' sel' : '') + (mined.includes(s.id) ? '' : ' unmined')}
+                  className={'inv-slot' + (s.core ? ' glint' : '') + (sel === s.id ? ' sel' : '')}
                   onClick={() => {
                     sfx.click();
                     setSel(s.id);
@@ -485,6 +488,7 @@ export function InventoryPanel() {
                   onFocus={() => setSel(s.id)}
                 >
                   <Icon name="gem" tint={tint(s.cat)} />
+                  {mined.includes(s.id) && <span className="mined" aria-hidden="true">✓</span>}
                   <span className="qty">{s.short}</span>
                 </button>
               ))}
@@ -497,8 +501,8 @@ export function InventoryPanel() {
             </div>
             <div style={{ color: oreColor[oreFor(sk.cat)], fontSize: 15 }}>{sk.cat}</div>
             {sk.usedAt.length > 0 && <div style={{ color: '#aaa', fontSize: 15 }}>Used at: {sk.usedAt.join(', ')}</div>}
-            {sk.core && <div style={{ color: '#aaa', fontSize: 15 }}>Core skill, used daily</div>}
-            <div style={{ color: '#777', fontSize: 14, marginTop: 2 }}>{mined.includes(sk.id) ? 'Mined ✓' : 'Not mined yet: find it in the Skill Quarry'}</div>
+            {sk.core && <div style={{ color: '#d9a8ff', fontSize: 15 }}>Core skill</div>}
+            <div style={{ color: '#9a9a9a', fontSize: 14, marginTop: 2 }}>{mined.includes(sk.id) ? 'Mined in the quarry ✓' : 'Tip: mine this ore in the Skill Quarry'}</div>
           </div>
           <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <Btn

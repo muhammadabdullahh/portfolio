@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { engine, travel } from './Game';
 import { ACHIEVEMENTS, useStore, type Panel } from '../store';
 import { sfx } from '../audio';
 import { Icon } from './common';
 import { skills } from '../data/profile';
 import type { ITEM_MAPS } from '../game/sprites';
+import { guestbookEnabled } from '../lib/guestbook';
 
 type Slot = { icon: keyof typeof ITEM_MAPS; label: string; section?: string; panel?: Panel; act?: () => void; tint?: [string, string] };
 
@@ -16,7 +17,7 @@ export const HOTBAR: Slot[] = [
   { icon: 'scroll', label: 'Education', section: 'library', panel: { kind: 'education' } },
   { icon: 'pearl', label: 'Contact', section: 'contact', panel: { kind: 'contact' } },
   { icon: 'paper', label: 'Resume', panel: { kind: 'resume' } },
-  { icon: 'chat', label: 'Chat & guestbook', act: () => useStore.getState().set({ chatOpen: true }) },
+  { icon: 'chat', label: guestbookEnabled ? 'Chat & guestbook' : 'Chat commands', act: () => useStore.getState().set({ chatOpen: true }) },
   { icon: 'eye', label: 'Quick view', act: () => useStore.getState().set({ screen: 'classic' }) },
 ];
 
@@ -34,8 +35,13 @@ export function useHotbar() {
   };
 }
 
+// survive remounts (e.g. returning from the quick view)
+let movedEver = false;
+let lastSection: string | null = 'Spawn';
+
 export function Hud() {
   const near = useStore((s) => s.near);
+  const chatOpen = useStore((s) => s.chatOpen);
   const panel = useStore((s) => s.panel);
   const sectionName = useStore((s) => s.sectionName);
   const ach = useStore((s) => s.achievements);
@@ -49,7 +55,20 @@ export function Hud() {
   const [coords, setCoords] = useState({ x: 22, y: 64 });
   const [secKey, setSecKey] = useState(0);
   const press = useHotbar();
-  const first = useRef(true);
+  const [moved, setMoved] = useState(movedEver);
+  useEffect(() => {
+    if (movedEver) return;
+    const on = () => {
+      movedEver = true;
+      setMoved(true);
+    };
+    window.addEventListener('player-moved', on, { once: true });
+    const t = setTimeout(on, 20000);
+    return () => {
+      window.removeEventListener('player-moved', on);
+      clearTimeout(t);
+    };
+  }, []);
 
   useEffect(() => {
     const on = (e: Event) => {
@@ -69,10 +88,8 @@ export function Hud() {
   }, []);
 
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
+    if (!sectionName || sectionName === lastSection) return;
+    lastSection = sectionName;
     setSecKey((k) => k + 1);
     const idx = ['Spawn', 'Career Village', 'Skill Quarry', 'Builds District', 'The Library', 'Multiplayer Gate'].indexOf(sectionName ?? '');
     if (idx >= 0) setActive(idx);
@@ -124,11 +141,23 @@ export function Hud() {
 
       {near && !panel && (
         <button className="prompt" onClick={() => engine?.interact()}>
-          <kbd className="kbd-only">Enter</kbd> {near.label}
+          <kbd className="kbd-only">Enter</kbd>
+          <span>
+            Open <strong>{near.label}</strong>
+          </span>
         </button>
       )}
 
-      <div className="touch" aria-hidden="true">
+      {!moved && !panel && !near && (
+        <div className="hint" role="note">
+          <span className="kbd-only">
+            <kbd>A</kbd> <kbd>D</kbd> walk · click anything · <kbd>1</kbd>–<kbd>9</kbd> jump to a section
+          </span>
+          <span className="touch-only">Tap the ground to walk · tap buildings to open them</span>
+        </div>
+      )}
+
+      <div className="touch" aria-hidden="true" style={chatOpen ? { display: 'none' } : undefined}>
         <div>
           <button {...dirBtn(-1)}>◀</button>
           <button {...dirBtn(1)}>▶</button>

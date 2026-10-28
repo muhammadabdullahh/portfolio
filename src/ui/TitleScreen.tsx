@@ -19,6 +19,7 @@ export function TitleScreen({ onPlay }: { onPlay: () => void }) {
         <span className="edition">Full-Stack Edition</span>
         <button
           className="splash"
+          tabIndex={-1}
           aria-label={`Splash: ${profile.splashes[splash]} (click for another)`}
           onClick={() => {
             sfx.pop();

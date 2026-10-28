@@ -4,17 +4,18 @@ import { sections, type Interactable } from '../game/world';
 import { panelFor, useStore } from '../store';
 import { sfx } from '../audio';
 import { skills } from '../data/profile';
+import { guestbookEnabled } from '../lib/guestbook';
 
 export let engine: Engine | null = null;
 
 export function openInteractable(i: Interactable) {
   const st = useStore.getState();
-  if (i.action === 'guestbook') {
+  if (i.action === 'guestbook' && guestbookEnabled) {
     st.set({ chatOpen: true });
     sfx.open();
     return;
   }
-  const p = panelFor(i.action);
+  const p = i.action === 'guestbook' ? ({ kind: 'contact' } as const) : panelFor(i.action);
   if (!p) return;
   sfx.open();
   st.open(p);
@@ -38,6 +39,7 @@ export function Game() {
 
   useEffect(() => {
     const st = useStore.getState();
+    let moved = false;
     const e = new Engine(
       canvasRef.current!,
       {
@@ -69,6 +71,11 @@ export function Game() {
           if (store.bugs + 1 === 1) store.toast('Bug fixed', 'Only 49+ more to match my Dayforce record');
         },
         onHover: (h) => setHover(h),
+        onMove: () => {
+          if (moved) return;
+          moved = true;
+          window.dispatchEvent(new Event('player-moved'));
+        },
       },
       { outfit: st.outfit, mined: st.mined, night: st.night },
     );
@@ -94,7 +101,8 @@ export function Game() {
   useEffect(() => {
     if (!engine) return;
     engine.mode = screen === 'play' ? 'play' : 'title';
-    engine.paused = screen === 'classic';
+    engine.hidden = screen === 'classic';
+    engine.resize();
     if (screen === 'play') {
       engine.camX = engine.px - engine.viewW() / 2;
       engine.clampCam();
@@ -111,6 +119,9 @@ export function Game() {
     const down = (ev: KeyboardEvent) => {
       const st = useStore.getState();
       if (typing()) return;
+      // let focused buttons and links handle Enter/Space themselves
+      const tgt = document.activeElement;
+      if ((ev.code === 'Enter' || ev.code === 'Space') && (tgt instanceof HTMLButtonElement || tgt instanceof HTMLAnchorElement)) return;
       if (ev.key === 'Escape') {
         if (st.chatOpen) st.set({ chatOpen: false });
         else if (st.panel) st.close();
@@ -118,6 +129,12 @@ export function Game() {
           sfx.open();
           st.open({ kind: 'pause' });
         }
+        return;
+      }
+      if (/^Digit[1-9]$/.test(ev.code)) {
+        // hotbar works from anywhere, even with a panel open
+        if (st.panel) st.close();
+        window.dispatchEvent(new CustomEvent('hotbar', { detail: Number(ev.code.slice(5)) - 1 }));
         return;
       }
       if (st.panel) {
@@ -135,6 +152,7 @@ export function Game() {
         return;
       }
       if (ev.code === 'Enter' || ev.code === 'KeyF') {
+        ev.preventDefault(); // stop the same keypress from clicking the panel's first button
         engine?.interact();
         return;
       }
@@ -172,11 +190,12 @@ export function Game() {
     if (hover.label.startsWith('ore:')) {
       const sk = skills.find((s) => s.id === hover.label.slice(4));
       if (sk) tip = { title: sk.name, cat: sk.cat, sub: 'Click to mine' };
-    } else tip = { title: hover.label, sub: 'Click to open' };
+    } else if (hover.label.startsWith('Bug')) tip = { title: 'A bug!', sub: 'Click to squash it' };
+    else tip = { title: hover.label, sub: 'Click to open' };
   }
 
   return (
-    <div className="game" aria-hidden={screen !== 'play'}>
+    <div className="game" aria-hidden={screen !== 'play'} style={screen === 'classic' ? { display: 'none' } : undefined}>
       <canvas
         ref={canvasRef}
         className={hover ? 'pointer' : ''}

@@ -189,17 +189,17 @@ export function buildWorld(): World {
     for (let i = 0; i < 6; i++) rect(x0 - 1 + i, g - 6 - i, 11 - i * 2, 1, B.BRICK);
     torch(x0 + 5, g - 3);
     labels.push({ x: x0 + 4.5, y: g - 12.5, text: 'Home', sub: 'Pickering, ON' });
-    interactables.push({ id: 'home', action: 'home', label: 'Home', x: x0, y: g - 11, w: 9, h: 11 });
+    interactables.push({ id: 'home', action: 'home', label: 'Home & wardrobe', x: x0, y: g - 11, w: 9, h: 11 });
   }
   // lectern with the about book
   props.push({ kind: 'lectern', x: 19, y: SURF - 1, w: 1, h: 1 });
-  interactables.push({ id: 'about', action: 'about', label: 'Read: About me', x: 18.5, y: SURF - 2, w: 2, h: 2 });
+  interactables.push({ id: 'about', action: 'about', label: 'About me', x: 18.5, y: SURF - 2, w: 2, h: 2 });
   labels.push({ x: 19.5, y: SURF - 2.6, text: 'About me' });
   // welcome sign
   props.push({ kind: 'sign', x: 25, y: SURF - 2, w: 1, h: 2, text: ['Welcome!', 'Walk right', 'to explore', '→ → →'] });
   // resume chest
   props.push({ kind: 'chest', x: 31, y: SURF - 1, w: 1, h: 1 });
-  interactables.push({ id: 'resume', action: 'resume', label: 'Open: Resume chest', x: 30.5, y: SURF - 2, w: 2, h: 2 });
+  interactables.push({ id: 'resume', action: 'resume', label: 'Resume', x: 30.5, y: SURF - 2, w: 2, h: 2 });
   labels.push({ x: 31.5, y: SURF - 2.6, text: 'Resume' });
   [2, 15, 35, 36].forEach((x, i) => tree(x, i));
 
@@ -223,7 +223,7 @@ export function buildWorld(): World {
     lamp(x0 + 5, g - 4, 4);
     lamp(x0 + 10, g - 4, 4);
     labels.push({ x: x0 + w / 2, y: g - h - 3.5, text: 'Dayforce', sub: '2025 – present' });
-    interactables.push({ id: 'dayforce', action: 'job:dayforce', label: 'Enter: Dayforce', x: x0, y: g - h - 2, w, h: h + 2 });
+    interactables.push({ id: 'dayforce', action: 'job:dayforce', label: 'Dayforce experience', x: x0, y: g - h - 2, w, h: h + 2 });
   }
   // TMU Architectural Science lab: brick + blue/gold banner
   {
@@ -242,7 +242,7 @@ export function buildWorld(): World {
     torch(x0 + 4, g - 3);
     torch(x0 + 8, g - 3);
     labels.push({ x: x0 + w / 2, y: g - h - 8.5, text: 'TMU · Architectural Science', sub: '2024 – 2025' });
-    interactables.push({ id: 'tmu', action: 'job:tmu', label: 'Enter: TMU lab', x: x0, y: g - h - 7, w, h: h + 7 });
+    interactables.push({ id: 'tmu', action: 'job:tmu', label: 'TMU experience', x: x0, y: g - h - 7, w, h: h + 7 });
   }
   // OPG power station with cooling tower
   {
@@ -263,7 +263,7 @@ export function buildWorld(): World {
     // chimney
     rect(x0 + 9, g - 14, 1, 5, B.STONEBRICK);
     labels.push({ x: x0 + 8, y: g - 15.5, text: 'Ontario Power Generation', sub: '2024' });
-    interactables.push({ id: 'opg', action: 'job:opg', label: 'Enter: OPG', x: x0, y: g - 14, w: 19, h: 14 });
+    interactables.push({ id: 'opg', action: 'job:opg', label: 'OPG experience', x: x0, y: g - 14, w: 19, h: 14 });
   }
   [47, 72, 92, 117].forEach((x, i) => tree(x, i));
   // village lamp posts
@@ -303,7 +303,7 @@ export function buildWorld(): World {
     cursor = end;
   });
   labels.push({ x: (Q0 + Q1) / 2, y: SURF - 7, text: 'Skill Quarry', sub: 'Click ores to mine them' });
-  interactables.push({ id: 'quarry-sign', action: 'skills', label: 'Open: Inventory', x: Q0 - 3, y: SURF - 2, w: 2, h: 2 });
+  interactables.push({ id: 'quarry-sign', action: 'skills', label: 'Skills inventory', x: Q0 - 3, y: SURF - 2, w: 2, h: 2 });
   props.push({ kind: 'sign', x: Q0 - 3, y: SURF - 2, w: 1, h: 2, text: ['Skill Quarry', 'Mine ores to', 'collect skills', '[E] inventory'] });
   // scaffolding / torches on the rim
   torch(Q0 - 1, SURF - 1);
@@ -325,7 +325,7 @@ export function buildWorld(): World {
     lamp(x0 + 1, g - 3, 4);
     lamp(x0 + 11, g - 3, 4);
     labels.push({ x: x0 + 6.5, y: g - 15, text: 'Sisters Through Faith', sub: 'Live ticketing platform' });
-    interactables.push({ id: 'stf', action: 'project:stf', label: 'Visit: Sisters Through Faith', x: x0, y: g - 13, w: 13, h: 13 });
+    interactables.push({ id: 'stf', action: 'project:stf', label: 'Sisters Through Faith project', x: x0, y: g - 13, w: 13, h: 13 });
   }
   // NearMoi: giant map pin
   {
@@ -352,7 +352,7 @@ export function buildWorld(): World {
     props.push({ kind: 'beacon', x: cx, y: g - 12, w: 1, h: 1 });
     lights.push({ x: cx + 0.5, y: g - 8, r: 6 });
     labels.push({ x: cx + 0.5, y: g - 14, text: 'NearMoi', sub: 'Event discovery app' });
-    interactables.push({ id: 'nearmoi', action: 'project:nearmoi', label: 'Visit: NearMoi', x: cx - 4, y: g - 12, w: 9, h: 12 });
+    interactables.push({ id: 'nearmoi', action: 'project:nearmoi', label: 'NearMoi project', x: cx - 4, y: g - 12, w: 9, h: 12 });
   }
   // Zenny: giant phone
   {
@@ -367,11 +367,11 @@ export function buildWorld(): World {
     rect(x0 + 3, g - 12, 2, 1, B.CONCRETE);
     lights.push({ x: x0 + 4, y: g - 7, r: 5 });
     labels.push({ x: x0 + 4, y: g - 15, text: 'Zenny', sub: 'iOS budgeting app' });
-    interactables.push({ id: 'zenny', action: 'project:zenny', label: 'Visit: Zenny', x: x0, y: g - 13, w: 8, h: 13 });
+    interactables.push({ id: 'zenny', action: 'project:zenny', label: 'Zenny project', x: x0, y: g - 13, w: 8, h: 13 });
   }
   // GitHub repos chest
   props.push({ kind: 'chest', x: 228, y: SURF - 1, w: 1, h: 1 });
-  interactables.push({ id: 'repos', action: 'repos', label: 'Open: GitHub chest', x: 227.5, y: SURF - 2, w: 2, h: 2 });
+  interactables.push({ id: 'repos', action: 'repos', label: 'GitHub repos', x: 227.5, y: SURF - 2, w: 2, h: 2 });
   labels.push({ x: 228.5, y: SURF - 2.6, text: 'More on GitHub' });
   [173, 194, 210, 232].forEach((x) => lamp(x, SURF - 1, 4));
 
@@ -390,7 +390,7 @@ export function buildWorld(): World {
     torch(x0 + 10, g - 4);
     lights.push({ x: x0 + 7.5, y: g - 1.5, r: 4 });
     labels.push({ x: x0 + w / 2, y: g - h - 6.5, text: 'Library', sub: 'Education' });
-    interactables.push({ id: 'education', action: 'education', label: 'Use: Enchanting table', x: x0, y: g - h - 5, w, h: h + 5 });
+    interactables.push({ id: 'education', action: 'education', label: 'Education', x: x0, y: g - h - 5, w, h: h + 5 });
   }
 
   // ================= MULTIPLAYER GATE (contact) =================
@@ -404,10 +404,10 @@ export function buildWorld(): World {
     props.push({ kind: 'portal', x: x0 + 1, y: g - 6, w: 4, h: 5 });
     lights.push({ x: x0 + 3, y: g - 3.5, r: 6 });
     labels.push({ x: x0 + 3, y: g - 8.8, text: 'Multiplayer', sub: 'Get in touch' });
-    interactables.push({ id: 'contact', action: 'contact', label: 'Enter: Multiplayer', x: x0, y: g - 8, w: 6, h: 8 });
+    interactables.push({ id: 'contact', action: 'contact', label: 'Contact me', x: x0, y: g - 8, w: 6, h: 8 });
     props.push({ kind: 'mailbox', x: 280, y: g - 2, w: 1, h: 2 });
-    interactables.push({ id: 'guestbook', action: 'guestbook', label: 'Sign: Guestbook', x: 279.5, y: g - 3, w: 2, h: 3 });
-    labels.push({ x: 280.5, y: g - 3.6, text: 'Guestbook' });
+    interactables.push({ id: 'guestbook', action: 'guestbook', label: 'Mailbox', x: 279.5, y: g - 3, w: 2, h: 3 });
+    labels.push({ x: 280.5, y: g - 3.6, text: 'Mailbox' });
     props.push({ kind: 'sign', x: 287, y: g - 2, w: 1, h: 2, text: ['You reached', 'the edge.', 'Thanks for', 'visiting!'] });
   }
   // world border walls

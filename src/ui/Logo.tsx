@@ -1,64 +1,87 @@
 import { useEffect, useRef } from 'react';
 import { hash2 } from '../game/rng';
 
-const FONT: Record<string, string[]> = {
-  A: ['.###.', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
-  B: ['####.', '#...#', '#...#', '####.', '#...#', '#...#', '####.'],
-  D: ['####.', '#...#', '#...#', '#...#', '#...#', '#...#', '####.'],
-  H: ['#...#', '#...#', '#...#', '#####', '#...#', '#...#', '#...#'],
-  L: ['#....', '#....', '#....', '#....', '#....', '#....', '#####'],
-  M: ['#...#', '##.##', '#.#.#', '#...#', '#...#', '#...#', '#...#'],
-  U: ['#...#', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
-};
-
 const LINES = ['MUHAMMAD', 'ABDULLAH'];
 
-/** Chunky stone block-letter wordmark, drawn pixel by pixel (no fonts or external art). */
+/** Stone block-letter wordmark: pixel font as a mask, filled with stone texture and extruded. */
 export function Logo() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const c = ref.current!;
-    const cell = 12; // each letter pixel is a 12x12 "block"
-    const depth = 4; // extrusion in cells... drawn in px multiples
-    const cols = 8 * 5 + 7;
-    const rows = 7 * 2 + 2;
-    c.width = cols * cell + depth * 3;
-    c.height = rows * cell + depth * 3;
-    const g = c.getContext('2d')!;
-    const cellsAt: [number, number][] = [];
-    LINES.forEach((word, li) =>
-      [...word].forEach((ch, i) => {
-        FONT[ch].forEach((row, y) =>
-          [...row].forEach((v, x) => {
-            if (v === '#') cellsAt.push([i * 6 + x, li * 9 + y]);
-          }),
-        );
-      }),
-    );
-    // extrusion
-    for (let d = depth * 3; d > 0; d -= 1) {
-      for (const [x, y] of cellsAt) {
-        g.fillStyle = d === depth * 3 ? '#1a1a1a' : '#2e2e2e';
-        g.fillRect(x * cell + d, y * cell + d, cell, cell);
+    let cancelled = false;
+    const draw = () => {
+      if (cancelled) return;
+      const c = ref.current!;
+      const fs = 120;
+      const W = 760;
+      const H = 270;
+      const depth = 10;
+      c.width = W;
+      c.height = H;
+      const g = c.getContext('2d')!;
+      g.imageSmoothingEnabled = false;
+      // 1) text mask
+      const mask = document.createElement('canvas');
+      mask.width = W;
+      mask.height = H;
+      const m = mask.getContext('2d')!;
+      m.font = `600 ${fs}px "Pixelify Sans", monospace`;
+      m.textAlign = 'center';
+      m.textBaseline = 'top';
+      m.fillStyle = '#fff';
+      LINES.forEach((t, i) => {
+        const w = m.measureText(t).width;
+        const sx = Math.min(1, (W - depth - 10) / w);
+        m.save();
+        m.translate((W - depth) / 2, 4 + i * (fs * 1.0));
+        m.scale(sx, 1);
+        m.fillText(t, 0, 0);
+        m.restore();
+      });
+      // 2) extrusion
+      for (let d = depth; d > 0; d--) {
+        const shade = document.createElement('canvas');
+        shade.width = W;
+        shade.height = H;
+        const sg = shade.getContext('2d')!;
+        sg.drawImage(mask, 0, 0);
+        sg.globalCompositeOperation = 'source-in';
+        sg.fillStyle = d === depth ? '#141414' : `rgb(${40 + d},${40 + d},${44 + d})`;
+        sg.fillRect(0, 0, W, H);
+        g.drawImage(shade, d, d);
       }
-    }
-    // faces with stone noise
-    for (const [x, y] of cellsAt) {
-      for (let py = 0; py < 4; py++)
-        for (let px = 0; px < 4; px++) {
-          const n = hash2(x * 4 + px, y * 4 + py, 21);
-          const v = 150 + Math.floor(n * 50) - (y % 9) * 6;
-          g.fillStyle = `rgb(${v},${v},${v})`;
-          g.fillRect(x * cell + px * 3, y * cell + py * 3, 3, 3);
+      // 3) stone face
+      const face = document.createElement('canvas');
+      face.width = W;
+      face.height = H;
+      const f = face.getContext('2d')!;
+      const px = 5;
+      for (let y = 0; y < H; y += px)
+        for (let x = 0; x < W; x += px) {
+          const n = hash2(x / px, y / px, 21);
+          const v = 168 + Math.floor(n * 48) - Math.floor((y % fs) / 6);
+          f.fillStyle = `rgb(${v},${v},${v + 2})`;
+          f.fillRect(x, y, px, px);
         }
-      // bevel
-      g.fillStyle = 'rgba(255,255,255,0.35)';
-      g.fillRect(x * cell, y * cell, cell, 2);
-      g.fillRect(x * cell, y * cell, 2, cell);
-      g.fillStyle = 'rgba(0,0,0,0.25)';
-      g.fillRect(x * cell, y * cell + cell - 2, cell, 2);
-      g.fillRect(x * cell + cell - 2, y * cell, 2, cell);
-    }
+      f.globalCompositeOperation = 'destination-in';
+      f.drawImage(mask, 0, 0);
+      g.drawImage(face, 0, 0);
+      // 4) top highlight
+      const hi = document.createElement('canvas');
+      hi.width = W;
+      hi.height = H;
+      const h = hi.getContext('2d')!;
+      h.drawImage(mask, 0, 0);
+      h.globalCompositeOperation = 'destination-out';
+      h.drawImage(mask, 0, 3);
+      h.globalCompositeOperation = 'source-in';
+      h.fillStyle = 'rgba(255,255,255,0.7)';
+      h.fillRect(0, 0, W, H);
+      g.drawImage(hi, 0, 0);
+    };
+    void document.fonts.load('600 120px "Pixelify Sans"').then(draw, draw);
+    return () => {
+      cancelled = true;
+    };
   }, []);
   return <canvas ref={ref} role="img" aria-label="Muhammad Abdullah" />;
 }

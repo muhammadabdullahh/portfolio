@@ -57,15 +57,12 @@ export default function App() {
     set({ screen: 'play' });
     const st = useStore.getState();
     st.unlock('hello');
-    if (!st.seenTutorial) {
-      setTimeout(() => useStore.getState().toast('How to play', 'Walk with A/D or tap the ground. Click buildings to open them. Hotbar = fast travel.', 'info', 8000), 900);
-      set({ seenTutorial: true });
-    }
+    if (!st.seenTutorial) set({ seenTutorial: true });
   };
 
   return (
     <>
-      {screen !== 'classic' && <Game />}
+      <Game />
       {screen === 'title' && <TitleScreen onPlay={play} />}
       {screen === 'play' && (
         <>
@@ -75,7 +72,7 @@ export default function App() {
         </>
       )}
       {screen === 'classic' && <Classic />}
-      <Toasts />
+      {screen !== 'classic' && <Toasts />}
     </>
   );
 }
