@@ -21,7 +21,7 @@ All textures, sprites, sounds and the logo are original: drawn or synthesized in
 
 ## Stack
 
-Vite · React 19 · TypeScript · Canvas 2D (custom engine) · skinview3d (three.js) · Zustand · Vitest. Hosted free on GitHub Pages via GitHub Actions.
+Vite · React 19 · TypeScript · Canvas 2D (custom engine) · skinview3d (three.js) · Zustand · Vitest. Hosted free on Vercel; GitHub Actions runs the tests.
 
 ## Develop
 
@@ -34,15 +34,15 @@ npm run build    # outputs to dist/
 
 Content lives in `src/data/profile.ts`. Edit it to update jobs, projects, skills or splash texts.
 
-## Deploy (free)
+## Deploy (free, Vercel)
 
-1. Push to `main`.
-2. In the repo: **Settings → Pages → Source: GitHub Actions** (one time).
-3. The site goes live at `https://muhammadabdullahh.github.io/portfolio/`.
+1. Push to GitHub: `git push -u origin main`.
+2. On [vercel.com](https://vercel.com), choose **Add New → Project**, import `muhammadabdullahh/portfolio`, and keep the detected **Vite** settings (build `npm run build`, output `dist`). Click **Deploy**.
+3. Every push to `main` now redeploys automatically, and every branch or PR gets its own preview link.
 
-### Custom domain later
+### Custom domain
 
-Buy the domain, then add it under **Settings → Pages → Custom domain**. At your registrar, add the DNS records GitHub shows: four `A` records for the apex domain and a `CNAME` for `www` pointing to `muhammadabdullahh.github.io`. Turn on **Enforce HTTPS**. After that, update `og:image` and `og:url` in `index.html` to the new domain.
+In the Vercel project, go to **Settings → Domains** and add the domain plus `www.` (redirect `www` to the apex). Vercel shows the exact DNS records to create; add them at your registrar (usually an `A` record for the apex and a `CNAME` for `www`). HTTPS is issued automatically. Then update `og:image` and `og:url` in `index.html` to the new domain.
 
 ## Optional guestbook (free Supabase)
 
@@ -50,6 +50,6 @@ The chat works without a backend; messages just stay local. To make the guestboo
 
 1. Create a free project at supabase.com and run `supabase/guestbook.sql` in its SQL editor.
 2. Add two repository secrets: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (Project Settings → API).
-3. Re-run the deploy workflow.
+3. Add the same two values in Vercel under **Settings → Environment Variables**, then redeploy.
 
 Row-level security only allows reading and inserting short messages without links, with a simple rate limit. Moderate or delete messages from the Supabase dashboard. Free Supabase projects pause after a week with no traffic; open the dashboard to wake one up.
