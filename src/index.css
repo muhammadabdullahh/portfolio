@@ -835,7 +835,6 @@ a {
   height: min(86vh, 860px);
   display: grid;
   grid-template-rows: auto auto 1fr;
-  grid-template-columns: minmax(0, 1fr);
   padding: 10px;
 }
 .addr {
@@ -1124,6 +1123,9 @@ a {
     object-fit: cover;
     object-position: 50% 20%;
   }
+  .inv-layout .model-col {
+    display: none;
+  }
   .gui {
     padding: 14px 14px 16px;
     max-height: 90vh;
@@ -1170,12 +1172,6 @@ a {
   }
   .title-foot {
     display: none;
-  }
-  .splash {
-    left: auto;
-    right: -4%;
-    top: 62%;
-    transform-origin: right center;
   }
   .title-menu .mc-btn {
     min-height: 38px;
@@ -1418,217 +1414,5 @@ a {
     right: 0;
     top: 74%;
     transform-origin: right center;
-  }
-}
-
-/* ---------- mobile polish ---------- */
-.model-col {
-  display: grid;
-  place-items: center;
-  background: #000;
-}
-.hud .short {
-  display: none;
-}
-.server .name {
-  overflow-wrap: anywhere;
-}
-.addr .mc-btn {
-  flex: none;
-}
-.proj-side {
-  min-width: 0;
-}
-.prompt {
-  min-height: 44px;
-  max-width: calc(100vw - 24px);
-}
-@media (pointer: coarse) {
-  /* stack: hotbar → touch buttons → prompt, nothing overlapping */
-  .touch {
-    bottom: calc(var(--hotbar-h, 60px) + 66px + env(safe-area-inset-bottom));
-  }
-  .prompt {
-    bottom: calc(var(--hotbar-h, 60px) + 66px + 72px + env(safe-area-inset-bottom));
-    white-space: normal;
-    text-align: center;
-    justify-content: center;
-  }
-  .chat {
-    bottom: calc(var(--hotbar-h, 60px) + 66px + env(safe-area-inset-bottom));
-  }
-}
-@media (max-width: 560px) {
-  .hud .long {
-    display: none;
-  }
-  .hud .short {
-    display: inline;
-  }
-  .hud-actions .quick-btn {
-    display: none;
-  }
-  .hud-actions .mc-btn {
-    min-width: 42px;
-    min-height: 42px;
-    font-size: 16px;
-  }
-  .coords {
-    font-size: 13px;
-    padding: 4px 6px;
-  }
-  .gui h2 {
-    font-size: 21px;
-  }
-  .gui h3 {
-    font-size: 17px;
-  }
-  .gui p,
-  .gui li {
-    font-size: 15px;
-  }
-  .tab {
-    font-size: 14px;
-    padding: 6px 9px;
-  }
-  .tags li {
-    font-size: 12px;
-  }
-  /* about book: photo on top, text full width */
-  .book {
-    padding: 16px 16px;
-  }
-  .book p {
-    font-size: 15px;
-  }
-  .book .mc-btn.small {
-    font-size: 13px;
-    padding: 4px 10px;
-    white-space: nowrap;
-  }
-  .book-photo {
-    float: none;
-    display: block;
-    width: 120px;
-    margin: 0 0 10px;
-  }
-  /* project browser */
-  .browser {
-    padding: 10px;
-  }
-  .browser .gui-head > .tabs {
-    flex: 1;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    min-width: 0;
-    scrollbar-width: none;
-  }
-  .browser .gui-head .tab {
-    white-space: nowrap;
-  }
-  .addr .url {
-    font-size: 13px;
-    padding: 6px 8px;
-  }
-  .addr .mc-btn {
-    padding: 4px 10px;
-    min-height: 40px;
-    font-size: 14px;
-  }
-  .proj-side h2 {
-    font-size: 19px;
-  }
-  /* server lists (contact, repos) */
-  .server {
-    grid-template-columns: 40px minmax(0, 1fr) auto;
-    gap: 10px;
-    padding: 8px;
-  }
-  .server .ico {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-  .server .name {
-    font-size: 16px;
-  }
-  .server .motd {
-    font-size: 13px;
-  }
-  .server.repo {
-    grid-template-columns: 40px minmax(0, 1fr);
-  }
-  .server.repo .lang {
-    grid-column: 2;
-  }
-  .ping {
-    display: none;
-  }
-  /* inventory & home */
-  .inv-layout .model-col:not(.keep-mobile) {
-    display: none;
-  }
-  .model-col.keep-mobile {
-    height: 200px;
-  }
-  .model-col.keep-mobile .player-model {
-    width: 130px;
-  }
-  .inv-grid {
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-  }
-  .enchant-opt {
-    font-size: 15px;
-    padding: 8px 10px;
-  }
-  .ach-grid {
-    grid-template-columns: 1fr;
-  }
-  .title-foot {
-    font-size: 10px;
-    line-height: 1.4;
-    text-align: center;
-  }
-  .chat {
-    font-size: 13px;
-  }
-  .chat-log {
-    max-height: 32vh;
-  }
-}
-
-.lbl-short {
-  display: none;
-}
-@media (max-width: 560px) {
-  .lbl-long {
-    display: none;
-  }
-  .lbl-short {
-    display: inline;
-  }
-}
-.hud,
-.touch button,
-.slot-btn {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-
-@media (max-width: 900px) {
-  .splash {
-    left: auto;
-    right: 0;
-    top: 74%;
-    transform-origin: right center;
-    max-width: 70vw;
-    white-space: normal;
-    text-align: right;
-  }
-}
-@media (max-width: 360px) {
-  .hotbar {
-    padding: 1px;
   }
 }
