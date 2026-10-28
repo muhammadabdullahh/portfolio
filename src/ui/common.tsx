@@ -67,6 +67,8 @@ export function CloseBtn({ onClick }: { onClick: () => void }) {
 export function Overlay({ children, labelledBy }: { children: ReactNode; labelledBy?: string }) {
   const close = useStore((s) => s.close);
   const ref = useRef<HTMLDivElement>(null);
+  const downOnBackdrop = useRef(false);
+  const openedAt = useRef(performance.now());
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
     const el = ref.current;
@@ -101,11 +103,17 @@ export function Overlay({ children, labelledBy }: { children: ReactNode; labelle
       role="dialog"
       aria-modal="true"
       aria-labelledby={labelledBy}
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) {
+      // Close only when a press both starts and ends on the backdrop. This ignores the
+      // synthetic mouse events a phone fires after the tap that opened the panel.
+      onPointerDown={(e) => {
+        downOnBackdrop.current = e.target === e.currentTarget && performance.now() - openedAt.current > 250;
+      }}
+      onClick={(e) => {
+        if (downOnBackdrop.current && e.target === e.currentTarget) {
           sfx.close();
           close();
         }
+        downOnBackdrop.current = false;
       }}
     >
       {children}
@@ -119,7 +127,7 @@ export function Btn({ children, onClick, href, className, ...rest }: { children:
       <a
         className={'mc-btn ' + (className ?? '')}
         href={href}
-        target={href.startsWith('http') ? '_blank' : undefined}
+        target={href.startsWith('http') || href.endsWith('.pdf') ? '_blank' : undefined}
         rel="noreferrer"
         onClick={() => {
           sfx.click();

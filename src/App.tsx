@@ -41,9 +41,14 @@ export default function App() {
 
   // deep links: #resume / #quick opens the quick view, #play skips the title
   useEffect(() => {
-    const h = location.hash.slice(1);
-    if (h === 'resume' || h === 'quick') set({ screen: 'classic' });
-    else if (h === 'play') set({ screen: 'play' });
+    const apply = () => {
+      const h = location.hash.slice(1);
+      if (h === 'resume' || h === 'quick') set({ screen: 'classic' });
+      else if (h === 'play') set({ screen: 'play' });
+    };
+    apply();
+    window.addEventListener('hashchange', apply);
+    return () => window.removeEventListener('hashchange', apply);
   }, [set]);
 
   useEffect(() => {

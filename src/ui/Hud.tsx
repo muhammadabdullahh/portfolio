@@ -50,7 +50,7 @@ export function Hud() {
   const sound = useStore((s) => s.sound);
   const set = useStore((s) => s.set);
   const open = useStore((s) => s.open);
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(() => engine?.section.slot ?? 0);
   const [hoverSlot, setHoverSlot] = useState<number | null>(null);
   const [coords, setCoords] = useState({ x: 22, y: 64 });
   const [secKey, setSecKey] = useState(0);
@@ -101,11 +101,17 @@ export function Hud() {
 
   const dirBtn = (d: number) => ({
     onPointerDown: (e: React.PointerEvent) => {
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
       if (engine) engine.touchDir = d;
+      try {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      } catch {
+        /* pointer already gone; holding still works without capture */
+      }
     },
     onPointerUp: () => engine && (engine.touchDir = 0),
     onPointerCancel: () => engine && (engine.touchDir = 0),
+    onLostPointerCapture: () => engine && (engine.touchDir = 0),
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
   });
 
   return (
@@ -116,22 +122,27 @@ export function Hud() {
         const b = (e.target as HTMLElement).closest('button');
         if (b && e.detail > 0) b.blur();
       }}
-      style={{ ['--slot-size' as string]: 'min(56px, calc((100vw - 28px) / 9))', ['--hotbar-h' as string]: 'min(60px, calc((100vw - 20px) / 9))' }}>
+      style={{ ['--slot-size' as string]: 'min(56px, calc((100vw - 14px) / 9))', ['--hotbar-h' as string]: 'min(60px, calc((100vw - 10px) / 9))' }}>
       <div className="hud-top">
         <div className="coords" aria-live="off">
           <div className="xyz">
             XYZ: {coords.x} / {coords.y} / 0
           </div>
-          <div>Biome: {sectionName ?? 'Spawn'}</div>
+          <div>
+            <span className="long">Biome: </span>
+            {sectionName ?? 'Spawn'}
+          </div>
         </div>
         <div className="hud-actions">
           <button className="mc-btn icon-btn" onClick={() => { sfx.click(); set({ night: !night }); if (!night) useStore.getState().unlock('night'); }} aria-label={night ? 'Switch to day' : 'Switch to night'}>
-            {night ? 'Day' : 'Night'}
+            <span className="long">{night ? 'Day' : 'Night'}</span>
+            <span className="short" aria-hidden="true">{night ? '☀' : '☾'}</span>
           </button>
           <button className="mc-btn icon-btn" onClick={() => { set({ sound: !sound }); setTimeout(sfx.click, 0); }} aria-label={sound ? 'Mute sound' : 'Turn sound on'} aria-pressed={sound}>
-            {sound ? '♪ On' : '♪ Off'}
+            <span className="long">{sound ? '♪ On' : '♪ Off'}</span>
+            <span className="short" aria-hidden="true">{sound ? '♪' : '✕'}</span>
           </button>
-          <button className="mc-btn icon-btn" onClick={() => { sfx.click(); set({ screen: 'classic' }); }}>
+          <button className="mc-btn icon-btn quick-btn" onClick={() => { sfx.click(); set({ screen: 'classic' }); }}>
             Quick view
           </button>
           <button className="mc-btn icon-btn" onClick={() => { sfx.open(); open({ kind: 'pause' }); }} aria-label="Menu">
@@ -146,7 +157,7 @@ export function Hud() {
         </div>
       )}
 
-      {near && !panel && (
+      {near && !panel && !chatOpen && (
         <button className="prompt" onClick={() => engine?.interact()}>
           <kbd className="kbd-only">Enter</kbd>
           <span>

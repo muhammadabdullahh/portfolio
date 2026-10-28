@@ -143,8 +143,9 @@ export function ProjectPanel({ id }: { id: string }) {
         <div className="gui-head" style={{ marginBottom: 0 }}>
           <div className="tabs" role="tablist" aria-label="Projects">
             {projects.map((x) => (
-              <button key={x.id} className="tab" role="tab" aria-selected={x.id === pid} onClick={() => { sfx.click(); setPid(x.id); }}>
-                {x.name}
+              <button key={x.id} className="tab" role="tab" aria-label={x.name} aria-selected={x.id === pid} onClick={() => { sfx.click(); setPid(x.id); }}>
+                <span className="lbl-long">{x.name}</span>
+                <span className="lbl-short" aria-hidden="true">{x.id === 'stf' ? 'STF' : x.name}</span>
               </button>
             ))}
           </div>
@@ -253,7 +254,7 @@ export function ReposPanel() {
       {repos && (
         <div style={{ display: 'grid', gap: 4 }}>
           {repos.map((r) => (
-            <a key={r.name} className="server" href={r.html_url} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+            <a key={r.name} className="server repo" href={r.html_url} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
               <span className="ico">
                 <Icon name="book" />
               </span>
@@ -263,7 +264,7 @@ export function ReposPanel() {
                   {r.description ?? 'No description'}
                 </span>
               </span>
-              <span className="motd">{r.language ?? ''}</span>
+              <span className="motd lang">{r.language ?? ''}</span>
             </a>
           ))}
         </div>
@@ -415,7 +416,7 @@ export function HomePanel() {
   return (
     <Gui title="Home base" subtitle="Pickering, Ontario">
       <div className="inv-layout">
-        <div className="inset model-col" style={{ display: 'grid', placeItems: 'center', background: '#000' }}>
+        <div className="inset model-col keep-mobile">
           <PlayerModel outfit={outfit} anim="idle" />
         </div>
         <div>
@@ -460,7 +461,7 @@ export function InventoryPanel() {
   return (
     <Gui title="Inventory" subtitle={`My ${skills.length} skills. Hover or tap one for details · ${mined.length} mined in the quarry`}>
       <div className="inv-layout">
-        <div className="model-col inset" style={{ display: 'grid', placeItems: 'center', background: '#000' }}>
+        <div className="model-col inset">
           <PlayerModel outfit={outfit} anim="idle" />
         </div>
         <div>
